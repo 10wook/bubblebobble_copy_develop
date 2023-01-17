@@ -1,3 +1,4 @@
+from email.mime import image
 from tkinter.tix import CELL
 from turtle import position
 import pygame
@@ -34,7 +35,8 @@ def setup():
             if col == "." or col == "/":
                 continue
             position = get_bubble_postion(row_idx,col_idx)
-            
+            image = get_bubble_image(col)
+            bubble = Bubble(image,col,position)
             
 def get_bubble_postion(row_idx,col_idx):
     #x좌표는 col_idx * cell_size + bubble_width//2
@@ -46,6 +48,19 @@ def get_bubble_postion(row_idx,col_idx):
         pos_x += CELL_SIZE//2
     return pos_x, pos_y
     
+def get_bubble_image(color):
+    if color == "R":
+        return bubble_images[0]
+    elif color == "B":
+        return bubble_images[1]
+    elif color == "Y":
+        return bubble_images[2]
+    elif color == "G":
+        return bubble_images[3]
+    elif color == "P":
+        return bubble_images[4]
+    else:
+        return bubble_images[-1]
     
     
     
