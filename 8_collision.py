@@ -105,9 +105,14 @@ def get_bubble_image(color):
         return bubble_images[-1]
     
 def prepare_bubbles():
-    global curr_bubble
-    curr_bubble = create_bubble()
+    global curr_bubble, next_bubble
+    if next_bubble:
+        curr_bubble = next_bubble
+    else:
+        curr_bubble = create_bubble()
     curr_bubble.set_rect((screen_width/2,624))
+    next_bubble = create_bubble()
+    next_bubble.set_rect((screen_width/4,688))
 def create_bubble():
     color = get_random_bubble_color()
     image = get_bubble_image(color)
@@ -122,6 +127,34 @@ def get_random_bubble_color():
                     colors.append(col)
                     
         return random.choice(colors)
+    
+def process_collision():
+    global curr_bubble,fire
+    hit_bubble = pygame.sprite.spritecollideany(curr_bubble,bubble_group,pygame.sprite.collide_mask)
+    if hit_bubble:
+        row_idx ,col_idx = get_map_index(*curr_bubble.rect.center)
+        place_bubble(curr_bubble,row_idx,col_idx)
+        curr_bubble = None
+        fire = False
+        
+def  get_map_index(x,y):
+    row_idx = y//CELL_SIZE
+    col_idx = x//CELL_SIZE
+    if row_idx %2 == 1:
+        col_idx = (x - (CELL_SIZE//2))//CELL_SIZE
+        if col_idx < 0:
+            col_idx = 0
+        elif col_idx > MAP_COL_COUNT -2:
+            col_idx =  MAP_COL_COUNT -2
+    return row_idx, col_idx
+
+def place_bubble(bubble:Bubble,row_idx,col_idx):
+    global map
+    map[row_idx][col_idx] = bubble.color
+    position = get_bubble_postion(row_idx,col_idx)
+    bubble.set_rect(position)
+    bubble_group.add(bubble)
+    return
     
 pygame.init()
 screen_width = 448
@@ -150,6 +183,9 @@ CELL_SIZE = 56
 BUBBLE_WIDTH = 56
 BUBBLE_HEIGHT = 62
 RED = (255, 0, 0)
+MAP_ROW_COUNT = 11
+MAP_COL_COUNT = 8
+
 
 #화살표 관련 변수   
 #to_angle = 0
@@ -158,6 +194,7 @@ to_angle_right = 0
 angle_speed = 1.5
 
 curr_bubble = None#이번에 쏠 버블
+next_bubble = None
 fire = False
 
 map = []
@@ -191,6 +228,10 @@ while running:
         
     if not curr_bubble:
         prepare_bubbles()
+    
+    if fire:
+        process_collision()
+    
         
     screen.blit(background,(0,0))
     bubble_group.draw(screen)
@@ -204,6 +245,9 @@ while running:
         if curr_bubble.rect.top <= 0:
             curr_bubble = None
             fire = False
+            
+    if next_bubble:
+        next_bubble.draw(screen)
     pygame.display.update()
     
     

@@ -105,9 +105,14 @@ def get_bubble_image(color):
         return bubble_images[-1]
     
 def prepare_bubbles():
-    global curr_bubble
-    curr_bubble = create_bubble()
+    global curr_bubble, next_bubble
+    if next_bubble:
+        curr_bubble = next_bubble
+    else:
+        curr_bubble = create_bubble()
     curr_bubble.set_rect((screen_width/2,624))
+    next_bubble = create_bubble()
+    next_bubble.set_rect((screen_width/4,688))
 def create_bubble():
     color = get_random_bubble_color()
     image = get_bubble_image(color)
@@ -158,6 +163,7 @@ to_angle_right = 0
 angle_speed = 1.5
 
 curr_bubble = None#이번에 쏠 버블
+next_bubble = None
 fire = False
 
 map = []
@@ -204,6 +210,9 @@ while running:
         if curr_bubble.rect.top <= 0:
             curr_bubble = None
             fire = False
+            
+    if next_bubble:
+        next_bubble.draw(screen)
     pygame.display.update()
     
     
