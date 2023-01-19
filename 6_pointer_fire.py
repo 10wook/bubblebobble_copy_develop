@@ -1,18 +1,31 @@
 from email.mime import image
 from tkinter.tix import CELL
-from turtle import position, speed
+import random
 import pygame
 import os
+import math
 
 #버블 클래스 만들기
 class Bubble(pygame.sprite.Sprite):
-    def __init__(self,image,color,position):
+    def __init__(self,image,color,position = (0,0)):
         super().__init__()
         self.image = image
         self.color = color
         self.rect = image.get_rect(center = position)
         
-
+    def set_rect(self,position):
+        self.rect = self.image.get_rect(center = position)
+        
+    def draw(self,screen):
+        screen.blit(self.image,self.rect)
+        
+    def set_angle(self, angle):
+        self.angle= angle
+        self.rad_angle = math.radians(self.angle)
+        
+    def move(self):
+        return
+        
 class Pointer (pygame.sprite.Sprite):
     def __init__(self, image, position, angle):
         super().__init__()
@@ -85,7 +98,24 @@ def get_bubble_image(color):
     else:
         return bubble_images[-1]
     
+def prepare_bubbles():
+    global curr_bubble
+    curr_bubble = create_bubble()
+    curr_bubble.set_rect((screen_width/2,624))
+def create_bubble():
+    color = get_random_bubble_color()
+    image = get_bubble_image(color)
+    return Bubble(image, color)
     
+    
+def get_random_bubble_color():
+        colors = []
+        for row in map:
+            for col in row:
+                if col not in colors and col not in [".", "/"] :
+                    colors.append(col)
+                    
+        return random.choice(colors)
     
 pygame.init()
 screen_width = 448
@@ -120,6 +150,10 @@ RED = (255, 0, 0)
 to_angle_left = 0
 to_angle_right = 0
 angle_speed = 1.5
+
+curr_bubble = None#이번에 쏠 버블
+fire = False
+
 map = []
 
 bubble_group = pygame.sprite.Group()
@@ -137,16 +171,29 @@ while running:
                 to_angle_left += angle_speed
             elif event.key == pygame.K_RIGHT:
                 to_angle_right -= angle_speed
+            elif event.key == pygame.K_SPACE:
+                if curr_bubble and not fire:
+                    fire = True
+                    curr_bubble.set_angle(pointer.angle)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 to_angle_left = 0
             elif event.key == pygame.K_RIGHT:
                 to_angle_right = 0
         
+        
+        
+    if not curr_bubble:
+        prepare_bubbles()
+        
     screen.blit(background,(0,0))
     bubble_group.draw(screen)
-    pointer.rotate(to_angle_right+to_angle_left)# 이 부분은 전에 쏘던 부분에도 추가하면 좋을 것 으로 보인다.
+    pointer.rotate(to_angle_right+to_angle_left)# 이 부분은 전에 쏘던 부분에도 추가하면 좋을 것 으로 보인다. 
     pointer.draw(screen)
+    if curr_bubble:
+        if fire:
+            curr_bubble.move()
+        curr_bubble.draw(screen)
     pygame.display.update()
     
     
