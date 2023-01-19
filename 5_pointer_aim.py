@@ -1,18 +1,37 @@
 from email.mime import image
 from tkinter.tix import CELL
-from turtle import position
+from turtle import position, speed
 import pygame
 import os
 
 #버블 클래스 만들기
 class Bubble(pygame.sprite.Sprite):
-    def __init__(self,image,color,position):
+    def __init__(self,image,color,position,angle):
         super().__init__()
         self.image = image
         self.color = color
         self.rect = image.get_rect(center = position)
+        self.angle = angle
 
-
+class Pointer (pygame.sprite.Sprite):
+    def __init__(self,image,position):
+        super().__init__()
+        self.image = image
+        
+        self.rect = image.get_rect(center = position)
+        self.original_image = image = 10
+        
+    def rotate(self,angle):
+        self.angle += angle
+        #각도 조정
+        if self.angle + angle > 170:
+            self.angle = 170
+        if self.angle + angle < 10:
+            self.angle = 10
+        
+        
+    def draw(self,screen):
+        screen.blit(self.image,self.rect)
 #스테이지 별로 맵 만들기
 def setup():
     global map
@@ -84,12 +103,16 @@ bubble_images = [
     pygame.image.load(os.path.join(current_path,"purple.png")).convert_alpha(),
     pygame.image.load(os.path.join(current_path,"black.png")).convert_alpha()
 ]
-
+pointer_image = pygame.image.load(os.path.join(current_path,"pointer.png"))
+pointer = Pointer(pointer_image, (screen_width//2,624),90)
 #게임 관련 변수
 CELL_SIZE = 56
 BUBBLE_WIDTH = 56
 BUBBLE_HEIGHT = 62
 
+#화살표 관련 변수   
+to_angle = 0
+angle_speed = 1.5
 map = []
 
 bubble_group = pygame.sprite.Group()
@@ -102,8 +125,21 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                to_angle += speed
+            elif event.key == pygame.K_RIGHT:
+                to_angle -= speed
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                to_angle = 0
+            elif event.key == pygame.K_RIGHT:
+                to_angle = 0
+        
     screen.blit(background,(0,0))
     bubble_group.draw(screen)
+    pointer.rotate(to_angle)
+    pointer.draw(screen)
     pygame.display.update()
     
     

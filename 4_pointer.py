@@ -12,7 +12,16 @@ class Bubble(pygame.sprite.Sprite):
         self.color = color
         self.rect = image.get_rect(center = position)
 
-
+class Pointer (pygame.sprite.Sprite):
+    def __init__(self,image,position):
+        super().__init__()
+        self.image = image
+        
+        self.rect = image.get_rect(center = position)
+        
+        
+    def draw(self,screen):
+        screen.blit(self.image,self.rect)
 #스테이지 별로 맵 만들기
 def setup():
     global map
@@ -84,7 +93,8 @@ bubble_images = [
     pygame.image.load(os.path.join(current_path,"purple.png")).convert_alpha(),
     pygame.image.load(os.path.join(current_path,"black.png")).convert_alpha()
 ]
-
+pointer_image = pygame.image.load(os.path.join(current_path,"pointer.png"))
+pointer = Pointer(pointer_image, (screen_width//2,624))
 #게임 관련 변수
 CELL_SIZE = 56
 BUBBLE_WIDTH = 56
@@ -104,6 +114,7 @@ while running:
             running = False
     screen.blit(background,(0,0))
     bubble_group.draw(screen)
+    pointer.draw(screen)
     pygame.display.update()
     
     
