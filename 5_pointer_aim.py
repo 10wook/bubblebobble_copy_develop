@@ -145,7 +145,7 @@ while running:
         
     screen.blit(background,(0,0))
     bubble_group.draw(screen)
-    pointer.rotate(to_angle_right+to_angle_left)# 이 부분은 전에 쏘던 부분에도 추가하면 좋을 것 으로 보인다.
+    pointer.rotate(to_angle_right+to_angle_left)# 이 부분은 전에 쏘던 부분에도 추가하면 좋을 것 으로 보인다. 
     pointer.draw(screen)
     pygame.display.update()
     
