@@ -59,18 +59,29 @@ class Pointer (pygame.sprite.Sprite):
 def setup():
     global map
     map = [
-           #["R","R","Y","Y","B"...]
-           list("RRYYBBGG"),
-           list("RRYYBBG/"), #/는 버블이 위치 할 수 없는 곳 이라는 의미
-           list("BBGGRRYY"),
-           list("BGGRRYY/"),
-           list("........"),
-           list("......./"),
-           list("........"),
-           list("......./"),
-           list("........"), 
-           list("......./"),
-           list("........")
+
+        #    list("RRYYBBGG"),
+        #    list("RRYYBBG/"), #/는 버블이 위치 할 수 없는 곳 이라는 의미
+        #    list("BBGGRRYY"),
+        #    list("BGGRRYY/"),
+        #    list("........"),
+        #    list("......./"),
+        #    list("........"),
+        #    list("......./"),
+        #    list("........"), 
+        #    list("......./"),
+        #    list("........")
+        list("...R...."),
+        list("......./"), #/는 버블이 위치 할 수 없는 곳 이라는 의미
+        list("........"),
+        list("......./"),
+        list("........"),
+        list("......./"),
+        list("........"),
+        list("......./"),
+        list("........"), 
+        list("......./"),
+        list("........")
            ]
     for row_idx,row in enumerate(map):
         for col_idx, col in enumerate(row):
@@ -131,7 +142,7 @@ def get_random_bubble_color():
 def process_collision():
     global curr_bubble,fire
     hit_bubble = pygame.sprite.spritecollideany(curr_bubble,bubble_group,pygame.sprite.collide_mask)
-    if hit_bubble:
+    if hit_bubble or curr_bubble.rect.top <= 0:
         row_idx ,col_idx = get_map_index(*curr_bubble.rect.center)
         place_bubble(curr_bubble,row_idx,col_idx)
         curr_bubble = None
@@ -242,9 +253,7 @@ while running:
             curr_bubble.move()
         curr_bubble.draw(screen)
         
-        if curr_bubble.rect.top <= 0:
-            curr_bubble = None
-            fire = False
+
             
     if next_bubble:
         next_bubble.draw(screen)
