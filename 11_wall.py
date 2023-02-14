@@ -1,3 +1,9 @@
+#벽내리기
+#총 7번 기회
+#기회 2번 남으면 화면이 조금 흔들림
+# 기회 1번 남으면 화면이 많이 흔들림
+# 기회 끝나면 벽이 내려옴
+
 from email.mime import image
 from tkinter.tix import CELL
 import random
@@ -148,7 +154,7 @@ def get_random_bubble_color():
         return random.choice(colors)
     
 def process_collision():
-    global curr_bubble,fire
+    global curr_bubble,fire, curr_fire_count
     hit_bubble = pygame.sprite.spritecollideany(curr_bubble,bubble_group,pygame.sprite.collide_mask)
     if hit_bubble or curr_bubble.rect.top <= 0:
         row_idx ,col_idx = get_map_index(*curr_bubble.rect.center)
@@ -156,6 +162,8 @@ def process_collision():
         remove_adjacent_bubbles(row_idx,col_idx,curr_bubble.color)
         curr_bubble = None
         fire = False
+        curr_fire_count = curr_fire_count -1
+        
         
 def  get_map_index(x,y):
     row_idx = y//CELL_SIZE
@@ -260,7 +268,7 @@ BUBBLE_HEIGHT = 62
 RED = (255, 0, 0)
 MAP_ROW_COUNT = 11
 MAP_COL_COUNT = 8
-
+FIRE_COUNT = 7
 
 #화살표 관련 변수   
 #to_angle = 0
@@ -271,6 +279,7 @@ angle_speed = 1.5
 curr_bubble = None#이번에 쏠 버블
 next_bubble = None
 fire = False
+curr_fire_count = FIRE_COUNT
 
 map = []
 visited = []
