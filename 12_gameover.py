@@ -1,11 +1,11 @@
-#벽내리기
-#총 7번 기회
-#기회 2번 남으면 화면이 조금 흔들림
-# 기회 1번 남으면 화면이 많이 흔들림
-# 기회 끝나면 벽이 내려옴
+# 게임종료 처리
+# 성공 : 화면내에 버블 사라지면 성공
+# 실패 다 내려오면 실패 ㅇㅇ
 
-from email.mime import image
-from tkinter.tix import CELL
+
+#from email.mime import image
+# from pickle import TRUE
+# from tkinter.tix import CELL
 import random
 import pygame
 import os
@@ -257,6 +257,11 @@ def  draw_bubbles():
         
     return
 
+def get_lowest_bubble_bottom():
+    bubble_bottoms = [bubble.rect.bottom for bubble in bubble_group]
+    return max(bubble_bottoms)
+
+
 def drop_wall():
     global wall_hieght, curr_fire_count
     wall_hieght += CELL_SIZE
@@ -264,6 +269,16 @@ def drop_wall():
         bubble.drop_downward(CELL_SIZE)
     curr_fire_count = FIRE_COUNT
 
+def change_bubble_image(image):
+    for bubble in bubble_group:
+        bubble.image = image
+        
+def display_gameover():
+    txt_game_over = game_font.render(game_result,True , WHITE)
+    rect_gameover = txt_game_over.get_rect(center = (screen_width//2, screen_height//2 ))
+    screen.blit(txt_game_over, rect_gameover)
+    
+    
 pygame.init()
 screen_width = 448
 screen_height = 720
@@ -292,6 +307,7 @@ CELL_SIZE = 56
 BUBBLE_WIDTH = 56
 BUBBLE_HEIGHT = 62
 RED = (255, 0, 0)
+WHITE = (255, 255, 255)
 MAP_ROW_COUNT = 11
 MAP_COL_COUNT = 8
 FIRE_COUNT = 7
@@ -308,6 +324,9 @@ fire = False
 curr_fire_count = FIRE_COUNT
 wall_hieght = 0
 
+is_game_over = False
+game_font = pygame.font.SysFont("arialrounded",38)
+game_result = None
 
 map = []
 visited = []
@@ -336,7 +355,7 @@ while running:
                 to_angle_left = 0
             elif event.key == pygame.K_RIGHT:
                 to_angle_right = 0
-        
+
         
         
     if not curr_bubble:
@@ -347,6 +366,15 @@ while running:
     
     if curr_fire_count == 0:
         drop_wall()
+        
+    if not bubble_group :
+        game_result = "MISSION COMPLETE"
+        is_game_over = True
+        
+    elif get_lowest_bubble_bottom() > len(map)*CELL_SIZE:
+        game_result = "GAME OVER"
+        is_game_over = True
+        change_bubble_image(bubble_images[-1])
         
     screen.blit(background,(0,0))
     screen.blit(wall, (0, wall_hieght - screen_height))
@@ -363,12 +391,17 @@ while running:
             curr_bubble.move()
         curr_bubble.draw(screen)
         
-
+ 
             
     if next_bubble:
         next_bubble.draw(screen)
+        
+        
+    if is_game_over:
+        display_gameover()
+        running = False 
     pygame.display.update()
     
     
-    
+pygame.time.delay(2000)
 pygame.quit()
