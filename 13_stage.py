@@ -13,6 +13,7 @@ import random
 import pygame
 import os
 import math
+from map import MAP
 
 #버블 클래스 만들기
 class Bubble(pygame.sprite.Sprite):
@@ -53,9 +54,7 @@ class Bubble(pygame.sprite.Sprite):
         
     def drop_downward(self, height):
         self.rect  = self.image.get_rect(center = (self.rect.centerx, self.rect.centery + height ))
-        
-        
-        
+
 class Pointer (pygame.sprite.Sprite):
     def __init__(self, image, position, angle):
         super().__init__()
@@ -79,36 +78,13 @@ class Pointer (pygame.sprite.Sprite):
     def draw(self,screen):
         screen.blit(self.image,self.rect)
         pygame.draw.circle(screen,RED,self.position,9)
-#스테이지 별로 맵 만들기
 
+#스테이지 별로 맵 만들기
 def setup():
     global map, stage_level
     #여기서 스테이지에 따라서 다른 맵을 임포트 해주면 될거 같은 생각이 드네용
     
-    map = [
-           list("RRYYBBGG"),
-           list("RRYYBBG/"), #/는 버블이 위치 할 수 없는 곳 이라는 의미
-           list("BBGGRRYY"),
-           list("BGGRRYY/"),
-           list("........"),
-           list("......./"),
-           list("........"),
-           list("......./"),
-           list("........"), 
-           list("......./"),
-           list("........")
-        # list("...R...."),
-        # list("......./"), #/는 버블이 위치 할 수 없는 곳 이라는 의미
-        # list("........"),
-        # list("......./"),
-        # list("........"),
-        # list("......./"),
-        # list("........"),
-        # list("......./"),
-        # list("........"), 
-        # list("......./"),
-        # list("........")
-           ]
+    map = MAP[stage_level-1]
     for row_idx,row in enumerate(map):
         for col_idx, col in enumerate(row):
             if col == "." or col == "/":
@@ -279,9 +255,12 @@ def display_gameover():
     rect_gameover = txt_game_over.get_rect(center = (screen_width//2, screen_height//2 ))
     screen.blit(txt_game_over, rect_gameover)
 
-
-
-
+def display_stage_title(stage_title):
+    screen.fill(BLACK)
+    txt_stage_title = game_font.render(stage_title, True , WHITE)
+    rect_stage_title = txt_stage_title.get_rect(center = (screen_width//2, screen_height//2 ))
+    screen.blit(txt_stage_title, rect_stage_title)
+    
 def next_stage():
     global stage_level, curr_bubble, next_bubble, fire, curr_fire_count, wall_hieght, is_stage_over
     stage_level += 1
@@ -290,16 +269,31 @@ def next_stage():
     draw_bubbles()
     pygame.display.update()
     pygame.time.delay(2000)
+    ##여기 부분에 다름 스테이지를 표기해준다!
+    stage_title = "STAGE " + str(stage_level)
+    display_stage_title(stage_title)
+    pygame.display.update()
+    pygame.time.delay(2000)
+    initailize()
+    setup()
+    
+def initailize():
+    global stage_level, curr_bubble, next_bubble, fire, curr_fire_count, wall_hieght, is_stage_over
     curr_bubble = None#이번에 쏠 버블
     next_bubble = None
     fire = False
     curr_fire_count = FIRE_COUNT
     wall_hieght = 0
     is_stage_over = False
+    return
     
-    setup()
-    
-    
+def display_start_page():
+    start_font = pygame.font.SysFont("arialrounded",20)
+    screen.fill(BLACK)
+    txt_start = start_font.render("PRESS SPACE TO START!",True , WHITE)
+    rect_start = txt_start.get_rect(center = (screen_width//2, screen_height//2 ))
+    screen.blit(txt_start, rect_start)
+    return
 pygame.init()
 screen_width = 448
 screen_height = 720
@@ -329,6 +323,7 @@ BUBBLE_WIDTH = 56
 BUBBLE_HEIGHT = 62
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 MAP_ROW_COUNT = 11
 MAP_COL_COUNT = 8
 FIRE_COUNT = 7
@@ -352,17 +347,21 @@ is_game_over = False
 is_stage_over = False
 game_font = pygame.font.SysFont("arialrounded",38)
 game_result = None
-
+start = True
 map = []
 visited = []
-
+stage1 = True
 bubble_group = pygame.sprite.Group()
 setup()
+# stage_title = "STAGE " + str(stage_level)
+# display_stage_title(stage_title)
+# pygame.display.update()
+# pygame.time.delay(2000)
 
 running = True
 while running:
     clock.tick(60)
-    
+        
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -375,13 +374,28 @@ while running:
                 if curr_bubble and not fire:
                     fire = True
                     curr_bubble.set_angle(pointer.angle)
+                start = False
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 to_angle_left = 0
             elif event.key == pygame.K_RIGHT:
                 to_angle_right = 0
-
+                
+    if start == True:
+        display_start_page()
+        pygame.display.update()
+        #pygame.time.delay(2000)
+        # start = False
+        continue
         
+        
+    if stage1 == True:
+        stage_title = "STAGE " + str(stage_level)
+        display_stage_title(stage_title)
+        pygame.display.update()
+        pygame.time.delay(2000)
+        stage1 = False
+        continue
         
     if not curr_bubble:
         prepare_bubbles()
@@ -394,7 +408,7 @@ while running:
         
     if not bubble_group :
         if stage_level >= FINAL_STAGE:
-            game_result = "MISSION COMPLETE"
+            game_result = "ALL CLEAR"
             is_game_over = True
         else:
             game_result = "STAGE CLEAR"
@@ -432,8 +446,10 @@ while running:
     if is_stage_over:
         
         pygame.display.update()
-        #pygame.time.delay(2000)
+        
         next_stage()
+        
+        
     pygame.display.update()
     
     

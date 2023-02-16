@@ -1,0 +1,25 @@
+MAP = [[
+        list("RRYYBBGG"),
+        list("RRYYBBG/"), 
+        list("BBGGRRYY"),
+        list("BGGRRYY/"),
+        list("........"),
+        list("......./"),
+        list("........"),
+        list("......./"),
+        list("........"), 
+        list("......./"),
+        list("........")],
+       
+       
+       [list("RRRRRRGG"),
+        list("RRYYBBG/"), 
+        list("BBGGRRYY"),
+        list("BGGRRYY/"),
+        list("........"),
+        list("......./"),
+        list("........"),
+        list("......./"),
+        list("........"), 
+        list("......./"),
+        list("........")]]
