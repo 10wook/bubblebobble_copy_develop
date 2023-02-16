@@ -327,7 +327,7 @@ BLACK = (0, 0, 0)
 MAP_ROW_COUNT = 11
 MAP_COL_COUNT = 8
 FIRE_COUNT = 7
-FINAL_STAGE = 2
+FINAL_STAGE = len(MAP)
 
 
 #화살표 관련 변수   

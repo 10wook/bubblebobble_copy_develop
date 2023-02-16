@@ -1,5 +1,17 @@
-MAP = [[
-        list("RRYYBBGG"),
+MAP = [
+       [list("RRRRRRRR"),
+        list("RRYYBBG/"), 
+        list("B.....YY"),
+        list("......Y/"),
+        list("........"),
+        list("......./"),
+        list("........"),
+        list("......./"),
+        list("........"), 
+        list("......./"),
+        list("........")],
+       
+        [list("RRYYBBGG"),
         list("RRYYBBG/"), 
         list("BBGGRRYY"),
         list("BGGRRYY/"),
@@ -10,7 +22,6 @@ MAP = [[
         list("........"), 
         list("......./"),
         list("........")],
-       
        
        [list("RRRRRRGG"),
         list("RRYYBBG/"), 
