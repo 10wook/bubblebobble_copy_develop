@@ -2,6 +2,7 @@
 # 성공 : 화면내에 버블 사라지면 성공 => 다음 스테이지로 넘어가기
 # 실패 다 내려오면 실패 ㅇㅇ => 바로 게임 종료
 
+#게임 오버 함수랑 스테이지 오버 함수를 따로 만드는게 좋을 듯 하다
 
 
 
@@ -79,10 +80,12 @@ class Pointer (pygame.sprite.Sprite):
         screen.blit(self.image,self.rect)
         pygame.draw.circle(screen,RED,self.position,9)
 #스테이지 별로 맵 만들기
-def setup():
-    global map
-    map = [
 
+def setup():
+    global map, stage_level
+    #여기서 스테이지에 따라서 다른 맵을 임포트 해주면 될거 같은 생각이 드네용
+    
+    map = [
            list("RRYYBBGG"),
            list("RRYYBBG/"), #/는 버블이 위치 할 수 없는 곳 이라는 의미
            list("BBGGRRYY"),
@@ -276,18 +279,26 @@ def display_gameover():
     rect_gameover = txt_game_over.get_rect(center = (screen_width//2, screen_height//2 ))
     screen.blit(txt_game_over, rect_gameover)
 
+
+
+
 def next_stage():
-    global stage_level, curr_bubble, next_bubble, fire, curr_fire_count, wall_hieght
+    global stage_level, curr_bubble, next_bubble, fire, curr_fire_count, wall_hieght, is_stage_over
     stage_level += 1
+    display_gameover()
+    bubble_group.draw(screen)
+    draw_bubbles()
+    pygame.display.update()
+    pygame.time.delay(2000)
     curr_bubble = None#이번에 쏠 버블
     next_bubble = None
     fire = False
     curr_fire_count = FIRE_COUNT
     wall_hieght = 0
-    display_gameover()
-    pygame.display.update()
-    pygame.time.delay(2000)
+    is_stage_over = False
+    
     setup()
+    
     
 pygame.init()
 screen_width = 448
@@ -338,6 +349,7 @@ wall_hieght = 0
 stage_level = 1
 
 is_game_over = False
+is_stage_over = False
 game_font = pygame.font.SysFont("arialrounded",38)
 game_result = None
 
@@ -386,7 +398,8 @@ while running:
             is_game_over = True
         else:
             game_result = "STAGE CLEAR"
-            next_stage()
+            #next_stage()
+            is_stage_over = True
             
     elif get_lowest_bubble_bottom() > len(map)*CELL_SIZE:
         game_result = "GAME OVER"
@@ -398,8 +411,6 @@ while running:
     
     bubble_group.draw(screen)
     
-    
-    
     draw_bubbles()
     pointer.rotate(to_angle_right+to_angle_left)# 이 부분은 전에 쏘던 부분에도 추가하면 좋을 것 으로 보인다. 
     pointer.draw(screen)
@@ -407,7 +418,6 @@ while running:
         if fire:
             curr_bubble.move()
         curr_bubble.draw(screen)
-        
  
             
     if next_bubble:
@@ -416,7 +426,14 @@ while running:
         
     if is_game_over:
         display_gameover()
+        
         running = False 
+        
+    if is_stage_over:
+        
+        pygame.display.update()
+        #pygame.time.delay(2000)
+        next_stage()
     pygame.display.update()
     
     
