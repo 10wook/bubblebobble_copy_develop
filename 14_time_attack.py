@@ -143,8 +143,7 @@ def process_collision():
         fire = False
         curr_fire_count = curr_fire_count -1
         recent_fire = pygame.time.get_ticks()
-        
-               
+                     
 def  get_map_index(x,y):
     row_idx = (y - wall_hieght) //CELL_SIZE
     col_idx = x//CELL_SIZE
