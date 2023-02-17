@@ -306,7 +306,9 @@ pygame.display.set_caption("Puzzle Bobble")
 clock = pygame.time.Clock()
 
 
-current_path = os.path.dirname(__file__)
+#current_path = os.path.dirname(__file__)
+current_path = os.getcwd()
+
 #배경
 background = pygame.image.load(os.path.join(current_path,"background.png"))
 wall = pygame.image.load(os.path.join(current_path,"wall.png"))
